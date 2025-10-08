@@ -1,0 +1,135 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Edit Claim - Insurance Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Edit Claim</h1>
+    <div>
+        <a href="{{ url_for('claim.view', claim_id=claim.claim_id) }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Claim
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Claim Information</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('claim.edit', claim_id=claim.claim_id) }}" method="POST" class="needs-validation" novalidate>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Claim Number</label>
+                            <div class="form-control bg-light">{{ claim.claim_number }}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Policy</label>
+                            <div class="form-control bg-light">
+                                {{ claim.policy.policy_number }} - {{ claim.policy.customer.full_name() }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Claim Date</label>
+                            <div class="form-control bg-light">{{ claim.claim_date.strftime('%Y-%m-%d') }}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Incident Date</label>
+                            <div class="form-control bg-light">{{ claim.incident_date.strftime('%Y-%m-%d') }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required>{{ claim.description }}</textarea>
+                        <div class="invalid-feedback">
+                            Please provide a description of the claim.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="claim_amount" class="form-label">Claim Amount <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="claim_amount" name="claim_amount" 
+                                   step="0.01" min="0" value="{{ claim.claim_amount }}" required>
+                            <div class="invalid-feedback">
+                                Please enter a valid claim amount.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                        <select class="form-select" id="status" name="status" required>
+                            <option value="Open" {% if claim.status == 'Open' %}selected{% endif %}>Open</option>
+                            <option value="In Progress" {% if claim.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                            <option value="Under Review" {% if claim.status == 'Under Review' %}selected{% endif %}>Under Review</option>
+                            <option value="Settled" {% if claim.status == 'Settled' %}selected{% endif %}>Settled</option>
+                            <option value="Denied" {% if claim.status == 'Denied' %}selected{% endif %}>Denied</option>
+                            <option value="Withdrawn" {% if claim.status == 'Withdrawn' %}selected{% endif %}>Withdrawn</option>
+                            <option value="Closed" {% if claim.status == 'Closed' %}selected{% endif %}>Closed</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a status.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 settlement-amount" {% if claim.status != 'Settled' %}style="display: none;"{% endif %}>
+                        <label for="settlement_amount" class="form-label">Settlement Amount</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="settlement_amount" name="settlement_amount" 
+                                   step="0.01" min="0" value="{{ claim.settlement_amount or '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="reset" class="btn btn-outline-secondary">Reset</button>
+                        <button type="submit" class="btn btn-primary">Update Claim</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Enable client-side form validation
+    (function() {
+        'use strict';
+        
+        // Fetch all forms with the class 'needs-validation'
+        var forms = document.querySelectorAll('.needs-validation');
+        
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms).forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                
+                form.classList.add('was-validated');
+            }, false);
+        });
+        
+        // Show/hide settlement amount based on status
+        document.getElementById('status').addEventListener('change', function() {
+            var settlementDiv = document.querySelector('.settlement-amount');
+            if (this.value === 'Settled') {
+                settlementDiv.style.display = 'block';
+            } else {
+                settlementDiv.style.display = 'none';
+            }
+        });
+    })();
+</script>
+{% endblock %} 

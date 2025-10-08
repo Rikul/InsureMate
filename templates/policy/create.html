@@ -1,0 +1,133 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Create Policy - Insurance Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Create New Policy</h1>
+    <a href="{{ url_for('policy.index') }}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to Policies
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-10 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Policy Information</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('policy.create') }}" method="POST">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="policy_number" class="form-label">Policy Number <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="policy_number" name="policy_number" required>
+                                <button class="btn btn-outline-secondary" type="button" id="generate-policy-number">
+                                    Generate
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="policy_type" class="form-label">Policy Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="policy_type" name="policy_type" required>
+                                <option value="" selected disabled>Select Policy Type</option>
+                                <option value="Auto">Auto</option>
+                                <option value="Home">Home</option>
+                                <option value="Life">Life</option>
+                                <option value="Health">Health</option>
+                                <option value="Business">Business</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="customer_id" class="form-label">Customer <span class="text-danger">*</span></label>
+                            <select class="form-select" id="customer_id" name="customer_id" required>
+                                <option value="" selected disabled>Select Customer</option>
+                                {% for customer in customers %}
+                                    <option value="{{ customer.customer_id }}">{{ customer.full_name() }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="agent_id" class="form-label">Agent <span class="text-danger">*</span></label>
+                            <select class="form-select" id="agent_id" name="agent_id" required>
+                                <option value="" selected disabled>Select Agent</option>
+                                {% for agent in agents %}
+                                    <option value="{{ agent.agent_id }}">{{ agent.full_name() }} ({{ agent.agency.name }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="coverage_amount" class="form-label">Coverage Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control currency-input" id="coverage_amount" name="coverage_amount" min="0" step="0.01" value="0.00">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="premium" class="form-label">Premium (Monthly)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control currency-input" id="premium" name="premium" min="0" step="0.01" value="0.00">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="start_date" class="form-label">Start Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="end_date" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="policy_status" class="form-label">Status</label>
+                        <select class="form-select" id="policy_status" name="policy_status">
+                            <option value="Active" selected>Active</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Cancelled">Cancelled</option>
+                            <option value="Expired">Expired</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="reset" class="btn btn-outline-secondary">Clear</button>
+                        <button type="submit" class="btn btn-primary">Create Policy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Set today's date as the default for start date
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().substr(0, 10);
+        document.getElementById('start_date').value = today;
+        
+        // Calculate end date as 1 year from start date
+        document.getElementById('start_date').addEventListener('change', function() {
+            const startDate = new Date(this.value);
+            const endDate = new Date(startDate);
+            endDate.setFullYear(endDate.getFullYear() + 1);
+            document.getElementById('end_date').value = endDate.toISOString().substr(0, 10);
+        });
+        
+        // Trigger change event to set initial end date
+        document.getElementById('start_date').dispatchEvent(new Event('change'));
+    });
+</script>
+{% endblock %}

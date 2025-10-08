@@ -1,0 +1,285 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Policy {{ policy.policy_number }} - Details{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Policy Details</h1>
+    <div>
+        <a href="{{ url_for('policy.edit_form', policy_id=policy.policy_id) }}" class="btn btn-sm btn-primary">
+            <i class="bi bi-pencil me-1"></i> Edit
+        </a>
+        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deletePolicyModal">
+            <i class="bi bi-trash me-1"></i> Delete
+        </button>
+        <a href="{{ url_for('policy.index') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    Policy Information
+                    <span class="badge float-end {% if policy.policy_status == 'Active' %}bg-success
+                                            {% elif policy.policy_status == 'Pending' %}bg-warning
+                                            {% elif policy.policy_status == 'Cancelled' %}bg-danger
+                                            {% else %}bg-secondary{% endif %}">
+                        {{ policy.policy_status }}
+                    </span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th style="width: 40%">Policy #</th>
+                                <td>{{ policy.policy_number }}</td>
+                            </tr>
+                            <tr>
+                                <th>Policy Type</th>
+                                <td>{{ policy.policy_type }}</td>
+                            </tr>
+                            <tr>
+                                <th>Coverage Amount</th>
+                                <td>${{ "{:,.2f}".format(policy.coverage_amount) }}</td>
+                            </tr>
+                            <tr>
+                                <th>Premium</th>
+                                <td>${{ "{:,.2f}".format(policy.premium) }}/month</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th style="width: 40%">Start Date</th>
+                                <td class="date-display">{{ policy.start_date }}</td>
+                            </tr>
+                            <tr>
+                                <th>End Date</th>
+                                <td class="date-display">{{ policy.end_date or 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Days Remaining</th>
+                                <td>
+                                    {% set days = policy.days_until_renewal() %}
+                                    {% if days is not none %}
+                                        <span class="badge {% if days <= 7 %}bg-danger
+                                                        {% elif days <= 30 %}bg-warning
+                                                        {% else %}bg-info{% endif %}">
+                                            {{ days }} days
+                                        </span>
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>{{ policy.policy_status }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-3">Customer Information</h6>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th style="width: 40%">Name</th>
+                                <td>
+                                    <a href="{{ url_for('customer.view', customer_id=policy.customer_id) }}">
+                                        {{ policy.customer.full_name() }}
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <td>{{ policy.customer.email or 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Phone</th>
+                                <td>{{ policy.customer.phone or 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Address</th>
+                                <td>{{ policy.customer.full_address() or 'N/A' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-3">Agent Information</h6>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th style="width: 40%">Name</th>
+                                <td>
+                                    <a href="{{ url_for('agent.view', agent_id=policy.agent_id) }}">
+                                        {{ policy.agent.full_name() }}
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <td>{{ policy.agent.email or 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Phone</th>
+                                <td>{{ policy.agent.phone or 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Agency</th>
+                                <td>
+                                    <a href="{{ url_for('agency.view', agency_id=policy.agent.agency_id) }}">
+                                        {{ policy.agent.agency.name }}
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Policy Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h6 class="text-muted mb-2">Annual Premium</h6>
+                    <h2>${{ "{:,.2f}".format(policy.premium * 12) }}</h2>
+                </div>
+                
+                <div class="mb-4">
+                    <h6 class="text-muted mb-2">Coverage</h6>
+                    <h2>${{ "{:,.2f}".format(policy.coverage_amount) }}</h2>
+                </div>
+                
+                <div class="mb-4">
+                    <h6 class="text-muted mb-2">Coverage Ratio</h6>
+                    <h2>
+                        {% if policy.premium > 0 %}
+                            {{ "{:,.1f}".format(policy.coverage_amount / (policy.premium * 12)) }}x
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </h2>
+                    <small class="text-muted">Coverage amount / Annual premium</small>
+                </div>
+                
+                {% if policy.end_date %}
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-2">Time Until Renewal</h6>
+                        {% set days = policy.days_until_renewal() %}
+                        {% if days is not none %}
+                            <div class="progress" style="height: 25px;">
+                                {% set percent = (365 - days) / 365 * 100 if days <= 365 else 100 %}
+                                <div class="progress-bar {% if days <= 7 %}bg-danger
+                                                      {% elif days <= 30 %}bg-warning
+                                                      {% else %}bg-success{% endif %}" 
+                                     role="progressbar" 
+                                     style="width: {{ percent }}%;" 
+                                     aria-valuenow="{{ percent }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                    {{ days }} days
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle me-2"></i> Policy has expired
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                
+                <hr class="my-4">
+                
+                <div class="d-grid gap-2">
+                    {% if policy.policy_status == 'Active' %}
+                        <button type="button" class="btn btn-outline-warning">
+                            <i class="bi bi-pause-circle me-1"></i> Suspend Policy
+                        </button>
+                    {% elif policy.policy_status == 'Pending' %}
+                        <button type="button" class="btn btn-outline-success">
+                            <i class="bi bi-check-circle me-1"></i> Activate Policy
+                        </button>
+                    {% endif %}
+                    
+                    <button type="button" class="btn btn-outline-primary">
+                        <i class="bi bi-printer me-1"></i> Print Policy
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-info">
+                        <i class="bi bi-envelope me-1"></i> Email to Customer
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- New Claims Card -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Claims</h5>
+                <a href="{{ url_for('claim.create_for_policy', policy_id=policy.policy_id) }}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i> Add Claim
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% if policy.claims %}
+                        {% for claim in policy.claims %}
+                            <a href="{{ url_for('claim.view', claim_id=claim.claim_id) }}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ claim.claim_number }}</h6>
+                                    <span class="badge {% if claim.is_open() %}bg-danger{% else %}bg-success{% endif %}">
+                                        {{ claim.status }}
+                                    </span>
+                                </div>
+                                <p class="mb-1">
+                                    <small class="text-muted">{{ claim.claim_date.strftime('%Y-%m-%d') }}</small>
+                                    <span class="ms-2">${{ "{:,.2f}".format(claim.claim_amount) }}</span>
+                                </p>
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <div class="list-group-item text-center py-3">
+                            <p class="text-muted mb-0">No claims filed for this policy</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deletePolicyModal" tabindex="-1" aria-labelledby="deletePolicyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletePolicyModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the policy "{{ policy.policy_number }}"?</p>
+                <p class="text-danger">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ url_for('policy.delete', policy_id=policy.policy_id) }}" method="POST">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

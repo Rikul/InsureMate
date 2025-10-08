@@ -1,0 +1,64 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Edit Agent - {{ agent.full_name() }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Edit Agent</h1>
+    <div>
+        <a href="{{ url_for('agent.view', agent_id=agent.agent_id) }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Details
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Agent Information</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('agent.edit', agent_id=agent.agent_id) }}" method="POST">
+                    <div class="mb-3">
+                        <label for="agency_id" class="form-label">Agency <span class="text-danger">*</span></label>
+                        <select class="form-select" id="agency_id" name="agency_id" required>
+                            {% for agency in agencies %}
+                                <option value="{{ agency.agency_id }}" {% if agency.agency_id == agent.agency_id %}selected{% endif %}>
+                                    {{ agency.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ agent.first_name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ agent.last_name }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ agent.email or '' }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" value="{{ agent.phone or '' }}">
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('agent.view', agent_id=agent.agent_id) }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

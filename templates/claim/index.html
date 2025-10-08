@@ -1,0 +1,162 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Claims - Insurance Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Claims</h1>
+    <div>
+        <a href="{{ url_for('claim.create_form') }}" class="btn btn-sm btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> Add Claim
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h5 class="mb-0">All Claims</h5>
+            </div>
+            <div class="col-md-auto">
+                {% if statuses %}
+                <form class="d-inline-block me-2" method="GET" action="{{ url_for('claim.index') }}">
+                    {% if search_term %}
+                    <input type="hidden" name="search" value="{{ search_term }}">
+                    {% endif %}
+                    <select class="form-select form-select-sm" name="status" onchange="this.form.submit()">
+                        <option value="">All Statuses</option>
+                        {% for status in statuses %}
+                        <option value="{{ status }}" {% if status_filter == status %}selected{% endif %}>{{ status }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+                {% endif %}
+            </div>
+            <div class="col-md-auto">
+                <form class="d-flex" method="GET" action="{{ url_for('claim.index') }}">
+                    {% if status_filter %}
+                    <input type="hidden" name="status" value="{{ status_filter }}">
+                    {% endif %}
+                    <input class="form-control form-control-sm me-2" type="search" 
+                           placeholder="Search claims" aria-label="Search"
+                           name="search" value="{{ search_term }}">
+                    <button class="btn btn-sm btn-outline-primary" type="submit">Search</button>
+                    {% if search_term or status_filter %}
+                    <a href="{{ url_for('claim.index') }}" class="btn btn-sm btn-outline-secondary ms-1">Clear</a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Claim #</th>
+                        <th>Policy #</th>
+                        <th>Customer</th>
+                        <th>Claim Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Days Open</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if claims %}
+                        {% for claim in claims %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('claim.view', claim_id=claim.claim_id) }}">
+                                        {{ claim.claim_number }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('policy.view', policy_id=claim.policy_id) }}">
+                                        {{ claim.policy.policy_number }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('customer.view', customer_id=claim.policy.customer_id) }}">
+                                        {{ claim.policy.customer.full_name() }}
+                                    </a>
+                                </td>
+                                <td>{{ claim.claim_date.strftime('%Y-%m-%d') }}</td>
+                                <td>${{ "{:,.2f}".format(claim.claim_amount) }}</td>
+                                <td>
+                                    {% if claim.status == 'Open' %}
+                                    <span class="badge bg-danger">{{ claim.status }}</span>
+                                    {% elif claim.status == 'In Progress' %}
+                                    <span class="badge bg-warning">{{ claim.status }}</span>
+                                    {% elif claim.status == 'Under Review' %}
+                                    <span class="badge bg-info">{{ claim.status }}</span>
+                                    {% elif claim.status in ['Settled', 'Closed'] %}
+                                    <span class="badge bg-success">{{ claim.status }}</span>
+                                    {% elif claim.status == 'Denied' %}
+                                    <span class="badge bg-dark">{{ claim.status }}</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ claim.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ claim.days_since_filed() }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('claim.view', claim_id=claim.claim_id) }}" 
+                                           class="btn btn-sm btn-outline-info" 
+                                           data-bs-toggle="tooltip" 
+                                           title="View Claim">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('claim.edit_form', claim_id=claim.claim_id) }}" 
+                                           class="btn btn-sm btn-outline-primary" 
+                                           data-bs-toggle="tooltip" 
+                                           title="Edit Claim">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-danger btn-delete" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#deleteModal{{ claim.claim_id }}" 
+                                                data-bs-toggle="tooltip" 
+                                                title="Delete Claim">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Delete Confirmation Modal -->
+                                    <div class="modal fade" id="deleteModal{{ claim.claim_id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ claim.claim_id }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deleteModalLabel{{ claim.claim_id }}">Confirm Delete</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Are you sure you want to delete claim "{{ claim.claim_number }}"?</p>
+                                                    <p class="text-danger">This action cannot be undone.</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <form action="{{ url_for('claim.delete', claim_id=claim.claim_id) }}" method="POST">
+                                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center py-3">No claims found</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

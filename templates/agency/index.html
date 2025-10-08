@@ -1,0 +1,126 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Agencies - Insurance Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Agencies</h1>
+    <div>
+        <a href="{{ url_for('agency.create_form') }}" class="btn btn-sm btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> Add Agency
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h5 class="mb-0">All Agencies</h5>
+            </div>
+            <div class="col-auto">
+                <form class="d-flex" method="GET" action="{{ url_for('agency.index') }}">
+                    <input class="form-control form-control-sm me-2" type="search" 
+                           placeholder="Search agencies" aria-label="Search"
+                           name="search" value="{{ search_term }}">
+                    <button class="btn btn-sm btn-outline-primary" type="submit">Search</button>
+                    {% if search_term %}
+                    <a href="{{ url_for('agency.index') }}" class="btn btn-sm btn-outline-secondary ms-1">Clear</a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Zip</th>
+                        <th>Phone</th>
+                        <th>Website</th>
+                        <th>Agents</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if agencies %}
+                        {% for agency in agencies %}
+                            <tr>
+                                <td>{{ agency.agency_id }}</td>
+                                <td>
+                                    <a href="{{ url_for('agency.view', agency_id=agency.agency_id) }}">
+                                        {{ agency.name }}
+                                    </a>
+                                </td>
+                                <td>{{ agency.address or '-' }}</td>
+                                <td>{{ agency.city or '-' }}</td>
+                                <td>{{ agency.state or '-' }}</td>
+                                <td>{{ agency.zip_code or '-' }}</td>
+                                <td>{{ agency.phone or '-' }}</td>
+                                <td>{{ agency.website or '-' }}</td>
+                                <td>{{ agency.agents|length }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('agency.view', agency_id=agency.agency_id) }}" 
+                                           class="btn btn-sm btn-outline-info" 
+                                           data-bs-toggle="tooltip" 
+                                           title="View Agency">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('agency.edit_form', agency_id=agency.agency_id) }}" 
+                                           class="btn btn-sm btn-outline-primary" 
+                                           data-bs-toggle="tooltip" 
+                                           title="Edit Agency">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-danger btn-delete" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#deleteModal{{ agency.agency_id }}" 
+                                                data-bs-toggle="tooltip" 
+                                                title="Delete Agency">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Delete Confirmation Modal -->
+                                    <div class="modal fade" id="deleteModal{{ agency.agency_id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ agency.agency_id }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deleteModalLabel{{ agency.agency_id }}">Confirm Delete</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Are you sure you want to delete the agency "{{ agency.name }}"?</p>
+                                                    <p class="text-danger">This will also delete all agents associated with this agency. This action cannot be undone.</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <form action="{{ url_for('agency.delete', agency_id=agency.agency_id) }}" method="POST">
+                                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center py-3">No agencies found</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

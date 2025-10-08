@@ -1,0 +1,147 @@
+/* Main layout styles */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.sidebar-sticky {
+    position: relative;
+    top: 0;
+    height: calc(100vh - 48px);
+    padding-top: .5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+main {
+    padding-top: 30px;
+    flex: 1;
+}
+
+/* Custom color scheme */
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --info-color: #0dcaf0;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+}
+
+/* Card customization */
+.card {
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    background-color: var(--light-color);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Table customization */
+.table-hover tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.075);
+}
+
+/* Form customization */
+.form-label {
+    font-weight: 500;
+}
+
+.form-section {
+    background-color: var(--light-color);
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+/* Status badges */
+.status-active {
+    color: var(--success-color);
+}
+
+.status-pending {
+    color: var(--warning-color);
+}
+
+.status-cancelled, .status-expired {
+    color: var(--danger-color);
+}
+
+/* Dashboard stat cards */
+.stat-card {
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: var(--light-color);
+    color: var(--dark-color);
+    transition: all 0.3s ease;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.stat-card .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.stat-card .stat-label {
+    font-size: 1rem;
+    color: var(--secondary-color);
+}
+
+.stat-card-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.stat-card-success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.stat-card-info {
+    background-color: var(--info-color);
+    color: white;
+}
+
+.stat-card-warning {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+/* Navigation styling */
+.nav-pills .nav-link.active {
+    background-color: var(--primary-color);
+}
+
+.navbar-brand {
+    font-weight: 700;
+}
+
+/* Footer styling */
+.footer {
+    background-color: var(--light-color);
+    border-top: 1px solid #dee2e6;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}

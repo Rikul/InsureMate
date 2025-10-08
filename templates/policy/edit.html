@@ -1,0 +1,132 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Edit Policy - {{ policy.policy_number }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Edit Policy</h1>
+    <div>
+        <a href="{{ url_for('policy.view', policy_id=policy.policy_id) }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Details
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-10 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Policy Information</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('policy.edit', policy_id=policy.policy_id) }}" method="POST">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="policy_number" class="form-label">Policy Number <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="policy_number" name="policy_number" value="{{ policy.policy_number }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="policy_type" class="form-label">Policy Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="policy_type" name="policy_type" required>
+                                <option value="Auto" {% if policy.policy_type == 'Auto' %}selected{% endif %}>Auto</option>
+                                <option value="Home" {% if policy.policy_type == 'Home' %}selected{% endif %}>Home</option>
+                                <option value="Life" {% if policy.policy_type == 'Life' %}selected{% endif %}>Life</option>
+                                <option value="Health" {% if policy.policy_type == 'Health' %}selected{% endif %}>Health</option>
+                                <option value="Business" {% if policy.policy_type == 'Business' %}selected{% endif %}>Business</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="customer_id" class="form-label">Customer <span class="text-danger">*</span></label>
+                            <select class="form-select" id="customer_id" name="customer_id" required>
+                                {% for customer in customers %}
+                                    <option value="{{ customer.customer_id }}" {% if customer.customer_id == policy.customer_id %}selected{% endif %}>
+                                        {{ customer.full_name() }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="agent_id" class="form-label">Agent <span class="text-danger">*</span></label>
+                            <select class="form-select" id="agent_id" name="agent_id" required>
+                                {% for agent in agents %}
+                                    <option value="{{ agent.agent_id }}" {% if agent.agent_id == policy.agent_id %}selected{% endif %}>
+                                        {{ agent.full_name() }} ({{ agent.agency.name }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="coverage_amount" class="form-label">Coverage Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control currency-input" id="coverage_amount" name="coverage_amount" 
+                                       min="0" step="0.01" value="{{ "%.2f"|format(policy.coverage_amount) }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="premium" class="form-label">Premium (Monthly)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control currency-input" id="premium" name="premium" 
+                                       min="0" step="0.01" value="{{ "%.2f"|format(policy.premium) }}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="start_date" class="form-label">Start Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" 
+                                   value="{{ policy.start_date.strftime('%Y-%m-%d') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="end_date" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" 
+                                   value="{{ policy.end_date.strftime('%Y-%m-%d') if policy.end_date else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="policy_status" class="form-label">Status</label>
+                        <select class="form-select" id="policy_status" name="policy_status">
+                            <option value="Active" {% if policy.policy_status == 'Active' %}selected{% endif %}>Active</option>
+                            <option value="Pending" {% if policy.policy_status == 'Pending' %}selected{% endif %}>Pending</option>
+                            <option value="Cancelled" {% if policy.policy_status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                            <option value="Expired" {% if policy.policy_status == 'Expired' %}selected{% endif %}>Expired</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('policy.view', policy_id=policy.policy_id) }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Calculate end date based on start date for new policies
+        document.getElementById('start_date').addEventListener('change', function() {
+            // Only auto-calculate end date if it's empty or we're creating a new policy
+            const endDateField = document.getElementById('end_date');
+            if (!endDateField.value) {
+                const startDate = new Date(this.value);
+                const endDate = new Date(startDate);
+                endDate.setFullYear(endDate.getFullYear() + 1);
+                endDateField.value = endDate.toISOString().substr(0, 10);
+            }
+        });
+    });
+</script>
+{% endblock %}

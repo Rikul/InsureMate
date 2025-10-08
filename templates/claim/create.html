@@ -1,0 +1,103 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Create Claim - Insurance Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Create New Claim</h1>
+    <a href="{{ url_for('claim.index') }}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to Claims
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Claim Information</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('claim.create') }}" method="POST" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="policy_id" class="form-label">Policy <span class="text-danger">*</span></label>
+                        {% if policy %}
+                            <input type="hidden" name="policy_id" value="{{ policy.policy_id }}">
+                            <div class="form-control bg-light">
+                                {{ policy.policy_number }} - {{ policy.customer.full_name() }}
+                            </div>
+                        {% else %}
+                            <select class="form-select" id="policy_id" name="policy_id" required>
+                                <option value="">Select Policy</option>
+                                {% for policy in policies %}
+                                    <option value="{{ policy.policy_id }}">
+                                        {{ policy.policy_number }} - {{ policy.customer.full_name() }} ({{ policy.policy_type }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a policy.
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="incident_date" class="form-label">Incident Date <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" id="incident_date" name="incident_date" required>
+                        <div class="invalid-feedback">
+                            Please provide the date of the incident.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                        <div class="invalid-feedback">
+                            Please provide a description of the claim.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="claim_amount" class="form-label">Claim Amount <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="claim_amount" name="claim_amount" step="0.01" min="0" required>
+                            <div class="invalid-feedback">
+                                Please enter a valid claim amount.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="reset" class="btn btn-outline-secondary">Clear</button>
+                        <button type="submit" class="btn btn-primary">Create Claim</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Enable client-side form validation
+    (function() {
+        'use strict';
+        
+        // Fetch all forms with the class 'needs-validation'
+        var forms = document.querySelectorAll('.needs-validation');
+        
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms).forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+{% endblock %} 

@@ -1,0 +1,134 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}{{ agency.name }} - Agency Details{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Agency Details</h1>
+    <div>
+        <a href="{{ url_for('agency.edit_form', agency_id=agency.agency_id) }}" class="btn btn-sm btn-primary">
+            <i class="bi bi-pencil me-1"></i> Edit
+        </a>
+        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAgencyModal">
+            <i class="bi bi-trash me-1"></i> Delete
+        </button>
+        <a href="{{ url_for('agency.index') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Agency Information</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Agency ID</dt>
+                    <dd class="col-sm-9">{{ agency.agency_id }}</dd>
+                    <dt class="col-sm-3">Name</dt>
+                    <dd class="col-sm-9">{{ agency.name }}</dd>
+                    <dt class="col-sm-3">Address</dt>
+                    <dd class="col-sm-9">{{ agency.address or '-' }}</dd>
+                    <dt class="col-sm-3">City</dt>
+                    <dd class="col-sm-9">{{ agency.city or '-' }}</dd>
+                    <dt class="col-sm-3">State</dt>
+                    <dd class="col-sm-9">{{ agency.state or '-' }}</dd>
+                    <dt class="col-sm-3">Zip Code</dt>
+                    <dd class="col-sm-9">{{ agency.zip_code or '-' }}</dd>
+                    <dt class="col-sm-3">Phone</dt>
+                    <dd class="col-sm-9">{{ agency.phone or '-' }}</dd>
+                    <dt class="col-sm-3">Website</dt>
+                    <dd class="col-sm-9">
+                        {% if agency.website %}
+                            <a href="{{ agency.website }}" target="_blank">{{ agency.website }}</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Agents</h5>
+                <a href="{{ url_for('agent.create_form') }}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-plus-circle me-1"></i> Add Agent
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Policies</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if agency.agents %}
+                            {% for agent in agency.agents %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('agent.view', agent_id=agent.agent_id) }}">
+                                            {{ agent.full_name() }}
+                                        </a>
+                                    </td>
+                                    <td>{{ agent.email or '-' }}</td>
+                                    <td>{{ agent.phone or '-' }}</td>
+                                    <td>{{ agent.policies|length }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ url_for('agent.view', agent_id=agent.agent_id) }}" 
+                                               class="btn btn-sm btn-outline-info">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{{ url_for('agent.edit_form', agent_id=agent.agent_id) }}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-3">No agents associated with this agency</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteAgencyModal" tabindex="-1" aria-labelledby="deleteAgencyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAgencyModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the agency "{{ agency.name }}"?</p>
+                <p class="text-danger">This will also delete all agents associated with this agency. This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ url_for('agency.delete', agency_id=agency.agency_id) }}" method="POST">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

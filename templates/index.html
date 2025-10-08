@@ -1,0 +1,334 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Dashboard - Insurance Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Dashboard</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="stat-card stat-card-primary">
+            <div class="stat-card-body">
+                <h5 class="stat-label">Agencies</h5>
+                <p class="stat-value">{{ agency_count }}</p>
+                <p class="stat-description">Total active agencies</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="stat-card stat-card-success">
+            <div class="stat-card-body">
+                <h5 class="stat-label">Agents</h5>
+                <p class="stat-value">{{ agent_count }}</p>
+                <p class="stat-description">Total active agents</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="stat-card stat-card-info">
+            <div class="stat-card-body">
+                <h5 class="stat-label">Customers</h5>
+                <p class="stat-value">{{ customer_count }}</p>
+                <p class="stat-description">Total registered customers</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="stat-card stat-card-warning">
+            <div class="stat-card-body">
+                <h5 class="stat-label">Policies</h5>
+                <p class="stat-value">{{ policy_count }}</p>
+                <p class="stat-description">Total active policies</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Claims Card -->
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="stat-card stat-card-danger">
+            <div class="stat-card-body">
+                <h5 class="stat-label">Claims</h5>
+                <p class="stat-value">{{ claim_count }}</p>
+                <p class="stat-description">Total filed claims</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Policies</h5>
+                <a href="{{ url_for('policy.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Policy #</th>
+                            <th>Customer</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if recent_policies %}
+                            {% for policy in recent_policies %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('policy.view', policy_id=policy.policy_id) }}">
+                                            {{ policy.policy_number }}
+                                        </a>
+                                    </td>
+                                    <td>{{ policy.customer.full_name() }}</td>
+                                    <td>{{ policy.policy_type }}</td>
+                                    <td class="date-display">{{ policy.start_date }}</td>
+                                    <td>
+                                        <span class="badge {% if policy.policy_status == 'Active' %}bg-success
+                                                        {% elif policy.policy_status == 'Pending' %}bg-warning
+                                                        {% elif policy.policy_status == 'Cancelled' %}bg-danger
+                                                        {% else %}bg-secondary{% endif %}">
+                                            {{ policy.policy_status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-3">No recent policies found</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Upcoming Renewals</h5>
+                <a href="{{ url_for('policy.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Policy #</th>
+                            <th>Customer</th>
+                            <th>Type</th>
+                            <th>End Date</th>
+                            <th>Days Left</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if upcoming_renewals %}
+                            {% for policy in upcoming_renewals %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('policy.view', policy_id=policy.policy_id) }}">
+                                            {{ policy.policy_number }}
+                                        </a>
+                                    </td>
+                                    <td>{{ policy.customer.full_name() }}</td>
+                                    <td>{{ policy.policy_type }}</td>
+                                    <td class="date-display">{{ policy.end_date }}</td>
+                                    <td>
+                                        {% set days = policy.days_until_renewal() %}
+                                        <span class="badge {% if days <= 7 %}bg-danger
+                                                        {% elif days <= 30 %}bg-warning
+                                                        {% else %}bg-info{% endif %}">
+                                            {{ days }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-3">No upcoming renewals found</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Claims Widgets -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Claims</h5>
+                <a href="{{ url_for('claim.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Claim #</th>
+                            <th>Policy #</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if recent_claims %}
+                            {% for claim in recent_claims %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('claim.view', claim_id=claim.claim_id) }}">
+                                            {{ claim.claim_number }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('policy.view', policy_id=claim.policy_id) }}">
+                                            {{ claim.policy.policy_number }}
+                                        </a>
+                                    </td>
+                                    <td>${{ "{:,.2f}".format(claim.claim_amount) }}</td>
+                                    <td class="date-display">{{ claim.claim_date }}</td>
+                                    <td>
+                                        <span class="badge {% if claim.is_open() %}bg-danger{% else %}bg-success{% endif %}">
+                                            {{ claim.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-3">No recent claims found</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Open Claims</h5>
+                <a href="{{ url_for('claim.index') }}?status=Open" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Claim #</th>
+                            <th>Customer</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Days Open</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if open_claims %}
+                            {% for claim in open_claims %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('claim.view', claim_id=claim.claim_id) }}">
+                                            {{ claim.claim_number }}
+                                        </a>
+                                    </td>
+                                    <td>{{ claim.policy.customer.full_name() }}</td>
+                                    <td>${{ "{:,.2f}".format(claim.claim_amount) }}</td>
+                                    <td class="date-display">{{ claim.claim_date }}</td>
+                                    <td>
+                                        <span class="badge {% if claim.days_since_filed() > 30 %}bg-danger
+                                                      {% elif claim.days_since_filed() > 14 %}bg-warning
+                                                      {% else %}bg-info{% endif %}">
+                                            {{ claim.days_since_filed() }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-3">No open claims found</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        <a href="{{ url_for('agency.create_form') }}" class="btn btn-primary btn-lg d-block mb-3">
+                            <i class="bi bi-building me-2"></i> Add Agency
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{{ url_for('agent.create_form') }}" class="btn btn-success btn-lg d-block mb-3">
+                            <i class="bi bi-person-badge me-2"></i> Add Agent
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{{ url_for('customer.create_form') }}" class="btn btn-info btn-lg d-block mb-3">
+                            <i class="bi bi-person-plus me-2"></i> Add Customer
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{{ url_for('policy.create_form') }}" class="btn btn-warning btn-lg d-block mb-3">
+                            <i class="bi bi-file-earmark-plus me-2"></i> Create Policy
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{{ url_for('claim.create_form') }}" class="btn btn-danger btn-lg d-block mb-3">
+                            <i class="bi bi-file-earmark-medical me-2"></i> File Claim
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Dashboard-specific JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Dashboard loaded');
+        
+        // Animated counters for stat cards
+        const statValues = document.querySelectorAll('.stat-value');
+        
+        statValues.forEach(valueElement => {
+            const finalValue = parseInt(valueElement.textContent, 10);
+            let startValue = 0;
+            let duration = 1000; // milliseconds
+            let step = finalValue / (duration / 20); // Update every 20ms
+            
+            function updateCounter() {
+                if (startValue < finalValue) {
+                    startValue = Math.min(startValue + step, finalValue);
+                    valueElement.textContent = Math.floor(startValue);
+                    setTimeout(updateCounter, 20);
+                } else {
+                    valueElement.textContent = finalValue;
+                }
+            }
+            
+            updateCounter();
+        });
+    });
+</script>
+{% endblock %}
