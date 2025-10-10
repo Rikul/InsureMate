@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, current_app
 from models.policy import Policy
 from models.agent import Agent
 from models.customer import Customer
@@ -13,9 +13,13 @@ policy_bp = Blueprint('policy', __name__)
 # List all policies
 @policy_bp.route('/', methods=['GET'])
 def index():
-    search_term = request.args.get('search', '')
-    status_filter = request.args.get('status', '')
-    
+    search_term = request.args.get('search', '').strip()
+    status_filter = request.args.get('status', '').strip()
+    page = request.args.get('page', 1, type=int)
+    if page < 1:
+        page = 1
+    per_page = current_app.config.get('ITEMS_PER_PAGE', 10)
+
     query = Policy.query
     
     if search_term:
@@ -30,21 +34,38 @@ def index():
                 Agent.last_name.ilike(f'%{search_term}%')
             )
         )
-    
+
     if status_filter:
         query = query.filter(Policy.policy_status == status_filter)
-        
-    policies = query.order_by(Policy.start_date.desc()).all()
+
+    policies_query = query.order_by(Policy.start_date.desc())
+    pagination = policies_query.paginate(page=page, per_page=per_page, error_out=False)
+
+    if pagination.total and page > pagination.pages:
+        page = pagination.pages
+        pagination = policies_query.paginate(page=page, per_page=per_page, error_out=False)
+
+    policies = pagination.items
+
+    if pagination.total and pagination.items:
+        start_index = (pagination.page - 1) * pagination.per_page + 1
+        end_index = start_index + len(pagination.items) - 1
+    else:
+        start_index = 0
+        end_index = 0
     
     # Get unique statuses for filter dropdown
     statuses = db.session.query(Policy.policy_status).distinct().all()
     statuses = [status[0] for status in statuses]
     
-    return render_template('policy/index.html', 
-                          policies=policies, 
+    return render_template('policy/index.html',
+                          policies=policies,
                           search_term=search_term,
                           status_filter=status_filter,
-                          statuses=statuses)
+                          statuses=statuses,
+                          pagination=pagination,
+                          start_index=start_index,
+                          end_index=end_index)
 
 # Show policy creation form
 @policy_bp.route('/create', methods=['GET'])

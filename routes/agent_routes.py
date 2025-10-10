@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, current_app
 from models.agent import Agent
 from models.agency import Agency
 from models.database import db
@@ -10,22 +10,56 @@ agent_bp = Blueprint('agent', __name__)
 # List all agents
 @agent_bp.route('/', methods=['GET'])
 def index():
-    search_term = request.args.get('search', '')
-    
+    search_term = request.args.get('search', '').strip()
+    page = request.args.get('page', 1, type=int)
+    if page < 1:
+        page = 1
+    per_page = current_app.config.get('ITEMS_PER_PAGE', 10)
+
+    query = Agent.query
+
     if search_term:
         # Search by name, email, or phone
-        agents = Agent.query.filter(
+        query = query.filter(
             or_(
                 Agent.first_name.ilike(f'%{search_term}%'),
                 Agent.last_name.ilike(f'%{search_term}%'),
                 Agent.email.ilike(f'%{search_term}%'),
                 Agent.phone.ilike(f'%{search_term}%')
             )
-        ).all()
+        )
+
+    pagination = query.order_by(Agent.last_name.asc(), Agent.first_name.asc()).paginate(
+        page=page,
+        per_page=per_page,
+        error_out=False
+    )
+
+    if pagination.total and page > pagination.pages:
+        page = pagination.pages
+        pagination = query.order_by(Agent.last_name.asc(), Agent.first_name.asc()).paginate(
+            page=page,
+            per_page=per_page,
+            error_out=False
+        )
+
+    agents = pagination.items
+
+    if pagination.total and pagination.items:
+        start_index = (pagination.page - 1) * pagination.per_page + 1
+        end_index = start_index + len(pagination.items) - 1
     else:
-        agents = Agent.query.all()
-        
-    return render_template('agent/index.html', agents=agents, search_term=search_term)
+        start_index = 0
+        end_index = 0
+
+    return render_template(
+        'agent/index.html',
+        agents=agents,
+        search_term=search_term,
+        pagination=pagination,
+        start_index=start_index,
+        end_index=end_index
+    )
 
 # Show agent creation form
 @agent_bp.route('/create', methods=['GET'])
