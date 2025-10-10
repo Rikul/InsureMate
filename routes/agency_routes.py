@@ -11,6 +11,8 @@ agency_bp = Blueprint('agency', __name__)
 def index():
     search_term = request.args.get('search', '').strip()
     page = request.args.get('page', 1, type=int)
+    if page < 1:
+        page = 1
     per_page = current_app.config.get('ITEMS_PER_PAGE', 10)
 
     query = Agency.query
@@ -28,10 +30,19 @@ def index():
         )
 
     pagination = query.order_by(Agency.agency_id.asc()).paginate(page=page, per_page=per_page, error_out=False)
+
+    if pagination.total and page > pagination.pages:
+        page = pagination.pages
+        pagination = query.order_by(Agency.agency_id.asc()).paginate(page=page, per_page=per_page, error_out=False)
+
     agencies = pagination.items
 
-    start_index = (pagination.page - 1) * pagination.per_page + 1 if pagination.total else 0
-    end_index = min(pagination.page * pagination.per_page, pagination.total) if pagination.total else 0
+    if pagination.total and pagination.items:
+        start_index = (pagination.page - 1) * pagination.per_page + 1
+        end_index = start_index + len(pagination.items) - 1
+    else:
+        start_index = 0
+        end_index = 0
 
     return render_template(
         'agency/index.html',
