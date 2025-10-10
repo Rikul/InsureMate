@@ -77,6 +77,10 @@ body {
     color: #fff;
 }
 
+.header-custom {
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+}
+
 main {
     padding-top: 30px;
     flex: 1;
@@ -147,8 +151,8 @@ main {
 /* Dashboard stat cards */
 .stat-card {
     border-radius: 1rem;
-    padding: 24px;
-    margin-bottom: 20px;
+    padding: 10px;
+    margin-bottom: 8px;
     color: #ffffff;
     position: relative;
     overflow: hidden;
@@ -174,7 +178,7 @@ main {
 }
 
 .stat-card .stat-value {
-    font-size: 2.75rem;
+    font-size: 2.25rem;
     font-weight: 700;
     margin-bottom: .25rem;
 }
@@ -248,8 +252,8 @@ main {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: .65rem;
-    padding: 1.1rem;
+    gap: .5rem;
+    padding: .8rem;
     width: 100%;
     border-radius: 1rem;
     background-color: #ffffff;
@@ -271,14 +275,14 @@ main {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 3rem;
-    height: 3rem;
-    border-radius: 0.85rem;
-    font-size: 1.35rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    font-size: 1.2rem;
 }
 
 .quick-action-label {
-    font-size: .95rem;
+    font-size: .85rem;
 }
 
 @media (max-width: 575.98px) {

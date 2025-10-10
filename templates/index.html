@@ -3,17 +3,11 @@
 {% block title %}Dashboard - {{ APP_NAME }}{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Dashboard</h1>
-</div>
+
 
 <div class="row">
     <div class="col-12">
         <div class="card quick-actions-card mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Quick Actions</h5>
-                <span class="text-muted small">Access the tools you use most</span>
-            </div>
             <div class="card-body">
                 <div class="row g-3 quick-action-grid">
                     <div class="col-6 col-md">
@@ -53,7 +47,7 @@
 </div>
 
 <div class="row">
-    <div class="col-md-3 mb-4">
+    <div class="col-lg col-md-6 mb-4">
         <div class="stat-card stat-card-primary">
             <div class="stat-card-body">
                 <h5 class="stat-label">Agencies</h5>
@@ -62,7 +56,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3 mb-4">
+    <div class="col-lg col-md-6 mb-4">
         <div class="stat-card stat-card-success">
             <div class="stat-card-body">
                 <h5 class="stat-label">Agents</h5>
@@ -71,16 +65,16 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3 mb-4">
+    <div class="col-lg col-md-6 mb-4">
         <div class="stat-card stat-card-info">
             <div class="stat-card-body">
                 <h5 class="stat-label">Customers</h5>
                 <p class="stat-value">{{ customer_count }}</p>
-                <p class="stat-description">Total registered customers</p>
+                <p class="stat-description">Total customers</p>
             </div>
         </div>
     </div>
-    <div class="col-md-3 mb-4">
+    <div class="col-lg col-md-6 mb-4">
         <div class="stat-card stat-card-warning">
             <div class="stat-card-body">
                 <h5 class="stat-label">Policies</h5>
@@ -89,16 +83,12 @@
             </div>
         </div>
     </div>
-</div>
-
-<!-- Add Claims Card -->
-<div class="row">
-    <div class="col-md-12 mb-4">
+    <div class="col-lg col-md-6 mb-4">
         <div class="stat-card stat-card-danger">
             <div class="stat-card-body">
-                <h5 class="stat-label">Claims</h5>
-                <p class="stat-value">{{ claim_count }}</p>
-                <p class="stat-description">Total filed claims</p>
+                <h5 class="stat-label">Open Claims</h5>
+                <p class="stat-value">{{ open_claim_count }}</p>
+                <p class="stat-description">Total open claims</p>
             </div>
         </div>
     </div>

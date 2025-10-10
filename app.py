@@ -73,6 +73,7 @@ def index():
     open_claims = Claim.query.filter(
         Claim.status.in_(['Open', 'In Progress', 'Under Review'])
     ).order_by(Claim.claim_date.asc()).limit(4).all()
+    open_claim_count = Claim.query.filter(Claim.status.in_(['Open', 'In Progress', 'Under Review'])).count()
     
     return render_template('index.html', 
                            agency_count=agency_count,
@@ -83,7 +84,8 @@ def index():
                            recent_policies=recent_policies,
                            upcoming_renewals=upcoming_renewals,
                            recent_claims=recent_claims,
-                           open_claims=open_claims)
+                           open_claims=open_claims,
+                           open_claim_count=open_claim_count)
 
 # Error handlers
 @app.errorhandler(404)
