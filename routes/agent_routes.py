@@ -1,8 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from models.agent import Agent
 from models.agency import Agency
-#from app import db
-from models.database import db, init_db  # Import from the new database module
+from models.database import db
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import or_
 
