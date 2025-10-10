@@ -8,6 +8,51 @@
 </div>
 
 <div class="row">
+    <div class="col-12">
+        <div class="card quick-actions-card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Quick Actions</h5>
+                <span class="text-muted small">Access the tools you use most</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 quick-action-grid">
+                    <div class="col-6 col-md">
+                        <a href="{{ url_for('agency.create_form') }}" class="quick-action-btn">
+                            <span class="quick-action-icon bg-primary-subtle text-primary"><i class="bi bi-building"></i></span>
+                            <span class="quick-action-label">Add Agency</span>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md">
+                        <a href="{{ url_for('agent.create_form') }}" class="quick-action-btn">
+                            <span class="quick-action-icon bg-success-subtle text-success"><i class="bi bi-person-badge"></i></span>
+                            <span class="quick-action-label">Add Agent</span>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md">
+                        <a href="{{ url_for('customer.create_form') }}" class="quick-action-btn">
+                            <span class="quick-action-icon bg-info-subtle text-info"><i class="bi bi-person-plus"></i></span>
+                            <span class="quick-action-label">Add Customer</span>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md">
+                        <a href="{{ url_for('policy.create_form') }}" class="quick-action-btn">
+                            <span class="quick-action-icon bg-warning-subtle text-warning"><i class="bi bi-file-earmark-plus"></i></span>
+                            <span class="quick-action-label">Create Policy</span>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md">
+                        <a href="{{ url_for('claim.create_form') }}" class="quick-action-btn">
+                            <span class="quick-action-icon bg-danger-subtle text-danger"><i class="bi bi-file-earmark-medical"></i></span>
+                            <span class="quick-action-label">File Claim</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
     <div class="col-md-3 mb-4">
         <div class="stat-card stat-card-primary">
             <div class="stat-card-body">
@@ -262,44 +307,6 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5>Quick Actions</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-2">
-                        <a href="{{ url_for('agency.create_form') }}" class="btn btn-primary btn-lg d-block mb-3">
-                            <i class="bi bi-building me-2"></i> Add Agency
-                        </a>
-                    </div>
-                    <div class="col-md-2">
-                        <a href="{{ url_for('agent.create_form') }}" class="btn btn-success btn-lg d-block mb-3">
-                            <i class="bi bi-person-badge me-2"></i> Add Agent
-                        </a>
-                    </div>
-                    <div class="col-md-2">
-                        <a href="{{ url_for('customer.create_form') }}" class="btn btn-info btn-lg d-block mb-3">
-                            <i class="bi bi-person-plus me-2"></i> Add Customer
-                        </a>
-                    </div>
-                    <div class="col-md-2">
-                        <a href="{{ url_for('policy.create_form') }}" class="btn btn-warning btn-lg d-block mb-3">
-                            <i class="bi bi-file-earmark-plus me-2"></i> Create Policy
-                        </a>
-                    </div>
-                    <div class="col-md-2">
-                        <a href="{{ url_for('claim.create_form') }}" class="btn btn-danger btn-lg d-block mb-3">
-                            <i class="bi bi-file-earmark-medical me-2"></i> File Claim
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block scripts %}
