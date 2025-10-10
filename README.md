@@ -186,3 +186,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Support
 
 For support or questions, please create an issue in the repository.
+
+### Previews
+
+![Dashboard](static/images/preview/dashboard.png)
+![Agencies](static/images/preview/agencies.png)
