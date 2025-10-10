@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, current_app
 from models.agency import Agency
 from models.database import db
 from sqlalchemy.exc import SQLAlchemyError
@@ -9,11 +9,15 @@ agency_bp = Blueprint('agency', __name__)
 # List all agencies
 @agency_bp.route('/', methods=['GET'])
 def index():
-    search_term = request.args.get('search', '')
-    
+    search_term = request.args.get('search', '').strip()
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config.get('ITEMS_PER_PAGE', 10)
+
+    query = Agency.query
+
     if search_term:
         # Search by name, address, city, state, or phone
-        agencies = Agency.query.filter(
+        query = query.filter(
             or_(
                 Agency.name.ilike(f'%{search_term}%'),
                 Agency.address.ilike(f'%{search_term}%'),
@@ -21,11 +25,22 @@ def index():
                 Agency.state.ilike(f'%{search_term}%'),
                 Agency.phone.ilike(f'%{search_term}%')
             )
-        ).all()
-    else:
-        agencies = Agency.query.all()
-        
-    return render_template('agency/index.html', agencies=agencies, search_term=search_term)
+        )
+
+    pagination = query.order_by(Agency.agency_id.asc()).paginate(page=page, per_page=per_page, error_out=False)
+    agencies = pagination.items
+
+    start_index = (pagination.page - 1) * pagination.per_page + 1 if pagination.total else 0
+    end_index = min(pagination.page * pagination.per_page, pagination.total) if pagination.total else 0
+
+    return render_template(
+        'agency/index.html',
+        agencies=agencies,
+        search_term=search_term,
+        pagination=pagination,
+        start_index=start_index,
+        end_index=end_index
+    )
 
 # Show agency creation form
 @agency_bp.route('/create', methods=['GET'])

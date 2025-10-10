@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, current_app
 from models.customer import Customer
 from models.database import db
 from sqlalchemy.exc import SQLAlchemyError
@@ -10,22 +10,41 @@ customer_bp = Blueprint('customer', __name__)
 # List all customers
 @customer_bp.route('/', methods=['GET'])
 def index():
-    search_term = request.args.get('search', '')
-    
+    search_term = request.args.get('search', '').strip()
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config.get('ITEMS_PER_PAGE', 10)
+
+    query = Customer.query
+
     if search_term:
         # Search by name, email, or phone
-        customers = Customer.query.filter(
+        query = query.filter(
             or_(
                 Customer.first_name.ilike(f'%{search_term}%'),
                 Customer.last_name.ilike(f'%{search_term}%'),
                 Customer.email.ilike(f'%{search_term}%'),
                 Customer.phone.ilike(f'%{search_term}%')
             )
-        ).all()
-    else:
-        customers = Customer.query.all()
-        
-    return render_template('customer/index.html', customers=customers, search_term=search_term)
+        )
+
+    pagination = query.order_by(Customer.last_name.asc(), Customer.first_name.asc()).paginate(
+        page=page,
+        per_page=per_page,
+        error_out=False
+    )
+    customers = pagination.items
+
+    start_index = (pagination.page - 1) * pagination.per_page + 1 if pagination.total else 0
+    end_index = min(pagination.page * pagination.per_page, pagination.total) if pagination.total else 0
+
+    return render_template(
+        'customer/index.html',
+        customers=customers,
+        search_term=search_term,
+        pagination=pagination,
+        start_index=start_index,
+        end_index=end_index
+    )
 
 # Show customer creation form
 @customer_bp.route('/create', methods=['GET'])
