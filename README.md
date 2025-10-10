@@ -62,6 +62,44 @@ A comprehensive Flask-based web application for managing insurance agencies, age
 
 The application will be available at `http://localhost:5000`
 
+## Testing
+
+This project includes a comprehensive test suite with unit tests for models and integration tests for routes.
+
+### Running Tests
+
+1. **Run all tests**
+   ```bash
+   pytest
+   ```
+
+2. **Run tests with coverage report**
+   ```bash
+   pytest --cov=models --cov=routes --cov=app --cov-report=term-missing
+   ```
+
+3. **Run specific test file**
+   ```bash
+   pytest tests/test_agency_model.py
+   ```
+
+4. **Run tests with verbose output**
+   ```bash
+   pytest -v
+   ```
+
+### Test Coverage
+
+The test suite includes:
+- **Model Tests**: Unit tests for all database models (Agency, Agent, Customer, Policy, Claim)
+- **Route Tests**: Integration tests for API endpoints and web routes
+- **App Tests**: Tests for main application functionality and error handlers
+
+Current test coverage:
+- Models: 100%
+- Routes: ~60% (agency and claim routes well-covered)
+- Overall: 61%
+
 ## Usage
 
 ### Dashboard
