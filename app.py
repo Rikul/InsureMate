@@ -41,6 +41,12 @@ app.register_blueprint(claim_bp, url_prefix='/claims')
 def inject_now():
     return {'now': datetime.utcnow()}
 
+# Add 'APP_NAME' to the Jinja2 template context                                           
+@app.context_processor                                                                    
+def inject_app_name():                                                                    
+    return {'APP_NAME': app.config['APP_NAME']}                                           
+
+
 # Home route
 @app.route('/')
 def index():

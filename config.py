@@ -13,5 +13,5 @@ class Config:
     PERMANENT_SESSION_LIFETIME = timedelta(days=1)
     
     # Application config
-    APP_NAME = "Insurance Management System"
+    APP_NAME = "InsureMate"
     ITEMS_PER_PAGE = 10

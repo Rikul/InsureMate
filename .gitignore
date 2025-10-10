@@ -60,3 +60,6 @@ nosetests.xml
 coverage.xml
 *.cover
 .pytest_cache/
+
+# test seeding the db
+seed.py
