@@ -42,9 +42,17 @@ A comprehensive Flask-based web application for managing insurance agencies, age
 
 4. **Set up the database**
    ```bash
-   flask db init
+   # If migrations folder doesn't exist, initialize it first
+   # flask db init
+   
+   # Create migration for database schema
    flask db migrate -m "Initial migration"
+   
+   # Apply migrations to database
    flask db upgrade
+   
+   # Or use the CLI command to create tables directly
+   flask create-db
    ```
 
 5. **Run the application**

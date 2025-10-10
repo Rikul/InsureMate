@@ -2,8 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from models.policy import Policy
 from models.agent import Agent
 from models.customer import Customer
-#from app import db
-from models.database import db, init_db  # Import from the new database module
+from models.database import db
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import or_
@@ -202,27 +201,6 @@ def delete(policy_id):
         db.session.rollback()
         flash(f'Error deleting policy: {str(e)}', 'danger')
         return redirect(url_for('policy.view', policy_id=policy.policy_id))
-
-# Filter policies
-@policy_bp.route('/filter', methods=['GET'])
-def filter():
-    policy_type = request.args.get('policy_type')
-    policy_status = request.args.get('policy_status')
-    
-    query = Policy.query
-    
-    if policy_type:
-        query = query.filter(Policy.policy_type == policy_type)
-    
-    if policy_status:
-        query = query.filter(Policy.policy_status == policy_status)
-    
-    policies = query.all()
-    
-    return render_template('policy/filtered_results.html', 
-                          policies=policies, 
-                          policy_type=policy_type,
-                          policy_status=policy_status)
 
 # API endpoint to get policies
 @policy_bp.route('/api/policies', methods=['GET'])

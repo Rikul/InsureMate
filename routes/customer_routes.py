@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from models.customer import Customer
-#from app import db
-from models.database import db, init_db  # Import from the new database module
+from models.database import db
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import or_
 from datetime import datetime

@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, url_for, request, flash, ses
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import Config
-from models.database import db, init_db  # Import from the new database module
+from models.database import db
 from datetime import datetime
 
 #Import models (after db initialization to avoid circular imports)
@@ -91,8 +91,9 @@ def server_error(e):
                           error_message="Internal server error"), 500
 
 # Command to create database tables
-@app.cli.command("init-db")
-def init_db():
+@app.cli.command("create-db")
+def create_db_command():
+    """Create database tables."""
     db.create_all()
     print("Database initialized!")
 

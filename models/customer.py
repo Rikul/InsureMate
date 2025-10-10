@@ -1,5 +1,4 @@
-#from app import db
-from models.database import db, init_db  # Import from the new database module
+from models.database import db
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
