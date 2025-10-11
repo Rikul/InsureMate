@@ -62,6 +62,32 @@ A comprehensive Flask-based web application for managing insurance agencies, age
 
 The application will be available at `http://localhost:5000`
 
+## Run with Docker (Recommended for Containers)
+
+To run InsureMate inside a container without manually installing Python or dependencies, use the provided Docker setup.
+
+1. **Build and start the stack**
+   ```bash
+   docker compose up --build
+   ```
+
+   This command builds the image, runs database migrations automatically, and starts the Flask development server on port `5000`.
+
+2. **Access the application**
+   Visit [http://localhost:5000](http://localhost:5000) in your browser.
+
+3. **Stop the stack**
+   Press `Ctrl+C` in the terminal, then run:
+   ```bash
+   docker compose down
+   ```
+
+### Docker configuration
+
+- The local project folder is mounted into the container, so code changes are reflected immediately without rebuilding.
+- SQLite data is stored in a named Docker volume (`insuremate-db`) to persist between runs.
+- Environment variables such as `DATABASE_URL`, `FLASK_ENV`, and `SECRET_KEY` can be customised in `docker-compose.yml` as needed.
+
 ## Testing
 
 This project includes a comprehensive test suite with unit tests for models and integration tests for routes.

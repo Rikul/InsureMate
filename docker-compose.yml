@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  insuremate:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+      - insuremate-db:/app/instance
+    environment:
+      FLASK_ENV: development
+      DATABASE_URL: sqlite:///instance/insurance.db
+      SECRET_KEY: changeme-in-docker
+    command: flask run
+
+volumes:
+  insuremate-db:
