@@ -1,17 +1,6 @@
 
 Flask-based web application for insurance agencies, agents, customers, policies, and claims.
 
-## Features
-
-- **Agency Management**: Create, view, edit, and delete insurance agencies
-- **Agent Management**: Manage insurance agents and their assignments to agencies
-- **Customer Management**: Handle customer information and contact details
-- **Policy Management**: Create and manage insurance policies with various types and coverage
-- **Claims Management**: Track and process insurance claims with status updates
-- **Dashboard**: Overview of key metrics and recent activities
-- **Search & Filter**: Advanced search and filtering capabilities across all entities
-- **Responsive Design**: Modern, mobile-friendly user interface using Bootstrap 5
-
 ## Technology Stack
 
 - **Backend**: Python 3.9+, Flask
