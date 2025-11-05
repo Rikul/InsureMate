@@ -1,5 +1,5 @@
 
-Flask-based web application for managing insurance agencies, agents, customers, policies, and claims.
+Flask-based web application for insurance agencies, agents, customers, policies, and claims.
 
 ## Features
 
