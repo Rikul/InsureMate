@@ -1,6 +1,5 @@
-# Insurance Management System
 
-A comprehensive Flask-based web application for managing insurance agencies, agents, customers, policies, and claims.
+Flask-based web application for managing insurance agencies, agents, customers, policies, and claims.
 
 ## Features
 
@@ -113,57 +112,6 @@ This project includes a comprehensive test suite with unit tests for models and 
    ```bash
    pytest -v
    ```
-
-### Test Coverage
-
-The test suite includes:
-- **Model Tests**: Unit tests for all database models (Agency, Agent, Customer, Policy, Claim)
-- **Route Tests**: Integration tests for API endpoints and web routes
-- **App Tests**: Tests for main application functionality and error handlers
-
-Current test coverage:
-- Models: 100%
-- Routes: ~60% (agency and claim routes well-covered)
-- Overall: 61%
-
-## Usage
-
-### Dashboard
-- View summary statistics for agencies, agents, customers, policies, and claims
-- Monitor recent activities and upcoming policy renewals
-- Access quick action buttons for common tasks
-
-### Managing Agencies
-- Add new insurance agencies with contact information
-- View agency details and associated agents
-- Edit agency information
-- Search agencies by name, location, or contact details
-
-### Managing Agents
-- Create agent profiles linked to agencies
-- View agent performance and assigned policies
-- Update agent information
-- Filter agents by agency or search by name/contact
-
-### Managing Customers
-- Register new customers with comprehensive contact details
-- Track customer policies and claims history
-- Update customer information
-- Search customers by name, email, or phone
-
-### Managing Policies
-- Create new insurance policies with detailed coverage information
-- Link policies to customers and agents
-- Track policy status and renewal dates
-- Search policies by number, type, or customer/agent names
-- Filter policies by status
-
-### Managing Claims
-- File new claims against existing policies
-- Track claim status from filing to resolution
-- Update claim information and settlement amounts
-- Search claims by claim number or policy
-- Filter claims by status
 
 ## Database Schema
 
